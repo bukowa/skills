@@ -1,15 +1,15 @@
 # Personal Skills & Rules
 
-Personal collection of custom skills and rules for Google Antigravity / Gemini CLI.
+Personal collection of custom skills and rules for Google Antigravity / Gemini CLI and OpenCode.
 
 ## Structure
 
 - `.agents/rules/`: Global rule files (e.g. `output.md`).
-- `.agents/skills/`: Custom skills (e.g. `fixing-bugs`, `github-actions-versioning`).
+- `.agents/skills/`: Custom skills (e.g. `fixing-bugs`, `github-actions-versioning`, `prefer-existing-libraries`).
 
 ## Global Synchronization (`sync.ps1`)
 
-Syncs skills and rules between this repository and your global configuration (`~/.gemini/config/`).
+Syncs rules & skills with `~/.gemini/config/` and skills with OpenCode (`~/.config/opencode/skills/`).
 
 ```powershell
 # Push skills & rules to global config (~/.gemini/config)

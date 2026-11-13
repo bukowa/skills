@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Syncs skills and rules between this repository and the global Gemini/Antigravity config (~/.gemini/config).
+    Syncs skills and rules between this repository, Gemini/Antigravity (~/.gemini/config), and OpenCode (~/.config/opencode/skills).
 .PARAMETER Pull
     Pull skills and rules from global config into this repository.
 .PARAMETER Link
@@ -20,6 +20,7 @@ param(
 
 $RepoAgents = Join-Path $PSScriptRoot ".agents"
 $GlobalConfig = Join-Path $env:USERPROFILE ".gemini\config"
+$OpenCodeSkills = Join-Path $env:USERPROFILE ".config\opencode\skills"
 
 $Categories = @(
     @{ Name = "rules";  IsFolder = $false },
@@ -110,19 +111,23 @@ function Run-Sync {
     if ($Pull) {
         Write-Host ">>> Pulling from Global Config into Repo ($RepoAgents) <<<" -ForegroundColor Cyan
         foreach ($cat in $Categories) {
-            Write-Host "`nSyncing $($cat.Name)..." -ForegroundColor Yellow
+            Write-Host "`nSyncing $($cat.Name) (Gemini)..." -ForegroundColor Yellow
             $src = Join-Path $GlobalConfig $cat.Name
             $dst = Join-Path $RepoAgents $cat.Name
             Sync-Items -srcDir $src -dstDir $dst -isFolder $cat.IsFolder -tryLink $false
         }
+        Write-Host "`nSyncing skills (OpenCode)..." -ForegroundColor Yellow
+        Sync-Items -srcDir $OpenCodeSkills -dstDir (Join-Path $RepoAgents "skills") -isFolder $true -tryLink $false
     } else {
-        Write-Host ">>> Pushing from Repo ($RepoAgents) to Global Config <<<" -ForegroundColor Cyan
+        Write-Host ">>> Pushing from Repo ($RepoAgents) to Global Configs <<<" -ForegroundColor Cyan
         foreach ($cat in $Categories) {
-            Write-Host "`nSyncing $($cat.Name)..." -ForegroundColor Yellow
+            Write-Host "`nSyncing $($cat.Name) -> $GlobalConfig..." -ForegroundColor Yellow
             $src = Join-Path $RepoAgents $cat.Name
             $dst = Join-Path $GlobalConfig $cat.Name
             Sync-Items -srcDir $src -dstDir $dst -isFolder $cat.IsFolder -tryLink $Link
         }
+        Write-Host "`nSyncing skills -> $OpenCodeSkills..." -ForegroundColor Yellow
+        Sync-Items -srcDir (Join-Path $RepoAgents "skills") -dstDir $OpenCodeSkills -isFolder $true -tryLink $Link
     }
     Write-Host "`nSync completed!" -ForegroundColor Green
 }
